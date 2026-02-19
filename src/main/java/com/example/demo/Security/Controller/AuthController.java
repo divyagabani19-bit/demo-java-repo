@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Security.Model.JwtRequest;
 import com.example.demo.Security.Model.JwtResponse;
-import com.example.demo.Security.JwtHelper;
+
 import com.example.demo.Security.JwtUtil;
 
 @RestController
@@ -38,7 +38,7 @@ public class AuthController {
 
 
     @Autowired
-   // private JwtHelper helper;
+  
     private JwtUtil Util;
 
     private Logger logger = LoggerFactory.getLogger(AuthController.class);
