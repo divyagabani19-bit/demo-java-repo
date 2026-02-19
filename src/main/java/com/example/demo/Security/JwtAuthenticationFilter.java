@@ -39,7 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private Logger logger = LoggerFactory.getLogger(OncePerRequestFilter.class);
     @Autowired
-    private JwtHelper jwtHelper;
+  ///  private JwtHelper jwtHelper;
+    private JwtUtil jwtUtil;
 
 
     @Autowired
@@ -60,8 +61,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             token = requestHeader.substring(7);
             try {
 
-                username = this.jwtHelper.getUsernameFromToken(token);
-
+                //username = this.jwtHelper.getUsernameFromToken(token);
+            	username = this.jwtUtil.extractUsername(token);
             } catch (IllegalArgumentException e) {
                 logger.info("Illegal Argument while fetching the username !!");
                 e.printStackTrace();
@@ -88,7 +89,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             //fetch user detail from username
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
+            //Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
+          Boolean validateToken = this.jwtUtil.validateToken(token, userDetails);
             if (validateToken) {
 
                 //set the authentication

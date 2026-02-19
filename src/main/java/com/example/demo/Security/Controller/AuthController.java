@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.Security.Model.JwtRequest;
 import com.example.demo.Security.Model.JwtResponse;
 import com.example.demo.Security.JwtHelper;
+import com.example.demo.Security.JwtUtil;
 
 @RestController
 @RequestMapping("/auth")
@@ -37,7 +38,8 @@ public class AuthController {
 
 
     @Autowired
-    private JwtHelper helper;
+   // private JwtHelper helper;
+    private JwtUtil Util;
 
     private Logger logger = LoggerFactory.getLogger(AuthController.class);
 
@@ -49,7 +51,7 @@ public class AuthController {
 
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        String token = this.helper.generateToken(userDetails);
+        String token = this.Util.generateToken(userDetails.getUsername());
 
         JwtResponse response = JwtResponse.builder()
                 .jwtToken(token)

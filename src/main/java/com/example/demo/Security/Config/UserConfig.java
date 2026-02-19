@@ -28,7 +28,7 @@ public class UserConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
+	@Bean	
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration
 			builder) throws Exception {
 		return builder.getAuthenticationManager();
