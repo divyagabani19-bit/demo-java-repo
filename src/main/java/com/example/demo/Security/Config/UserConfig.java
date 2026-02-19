@@ -1,26 +1,33 @@
 package com.example.demo.Security.Config;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
+
+import com.example.demo.Security.Repo.AuthRepo;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
+@RequiredArgsConstructor
 public class UserConfig {
 
+	@Autowired AuthRepo repo;
+	
 	@Bean
 	public UserDetailsService userDetailsService() {
-		UserDetails user1 = User.builder().username("shree1").password(passwordEncoder().encode("xr123")).roles("SELLER").build();
-
-		UserDetails user2 = User.builder().username("shree2").password(passwordEncoder().encode("2xr123")).roles("BUYER").build();
-
-		return new InMemoryUserDetailsManager(user1, user2);
+		return username -> repo.findByName(username)
+				.orElseThrow(() -> new UsernameNotFoundException("user not found"));
 	}
 
 	@Bean
@@ -29,9 +36,14 @@ public class UserConfig {
 	}
 
 	@Bean	
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration
-			builder) throws Exception {
-		return builder.getAuthenticationManager();
+	public AuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
+		authProvider.setPasswordEncoder(passwordEncoder());
+		return authProvider;
 	}
 
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+		return config.getAuthenticationManager(); 
+	}
 }

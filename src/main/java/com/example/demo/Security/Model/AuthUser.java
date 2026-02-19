@@ -1,8 +1,5 @@
 package com.example.demo.Security.Model;
 
-
-
-
 import java.util.Collection;
 import java.util.List;
 
@@ -32,15 +29,16 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "LoginUser")
 
-public class User implements UserDetails{
+public class AuthUser implements UserDetails{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private String userId;
+	private Integer userId;
 	private String name;
-	private String email;
+	private String password;
 	
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(role.name()));
@@ -48,12 +46,12 @@ public class User implements UserDetails{
 	@Override
 	public @Nullable String getPassword() {
 
-		return null;
+		return password;
 	}
 	@Override
 	public String getUsername() {
 
-		return null;
+		return name;
 	}
 }
 
