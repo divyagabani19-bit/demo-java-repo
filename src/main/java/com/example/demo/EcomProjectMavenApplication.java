@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import com.example.demo.Security.Config.JwtConfig;
+
 // Use this @EnableConfigurationProperties for autoLoad jwt properties
 @EnableConfigurationProperties(JwtConfig.class)
 @SpringBootApplication

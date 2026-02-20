@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
-
 // Using @value
 /*@Component
 @Getter
@@ -22,13 +21,14 @@ public class JwtConfig {
 
  }*/
 
-  @Component
-  
-  @ConfigurationProperties(prefix = "jwt")
-  @Data
-  public class JwtConfig {
-  
-  private String secret; private long expiration; private String issuer;
-  
-  }
- 
+@Component
+
+@ConfigurationProperties(prefix = "jwt")
+@Data
+public class JwtConfig {
+
+	private String secret;
+	private long expiration;
+	private String issuer;
+
+}

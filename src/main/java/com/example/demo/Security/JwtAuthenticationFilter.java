@@ -6,9 +6,6 @@
 //Load user associated with this token
 //set authentication
 
-
-
-
 package com.example.demo.Security;
 
 import java.io.IOException;
@@ -30,81 +27,76 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private Logger logger = LoggerFactory.getLogger(OncePerRequestFilter.class);
+	private Logger logger = LoggerFactory.getLogger(OncePerRequestFilter.class);
 
-    @Autowired
-    private JwtService jwtService;
-    
-    @Autowired
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private JwtService jwtService;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	@Autowired
+	private UserDetailsService userDetailsService;
 
-        //Authorization
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 
-        String requestHeader = request.getHeader("Authorization");
-        //Bearer 2352345235sdfrsfgsdfsdf
-        logger.info(" Header :  {}", requestHeader);
-        String username = null;
-        String token = null;
-        if (requestHeader != null && requestHeader.startsWith("Bearer")) {
-            //looking good
-            token = requestHeader.substring(7);
-            try {
+		// Authorization
 
-            	username = jwtService.extractUsername(token);
-            } catch (IllegalArgumentException e) {
-                logger.info("Illegal Argument while fetching the username !!");
-                e.printStackTrace();
-            } catch (ExpiredJwtException e) {
-                logger.info("Given jwt token is expired !!");
-                e.printStackTrace();
-            } catch (MalformedJwtException e) {
-                logger.info("Some changed has done in token !! Invalid Token");
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+		String requestHeader = request.getHeader("Authorization");
+		// Bearer 2352345235sdfrsfgsdfsdf
+		logger.info(" Header :  {}", requestHeader);
+		String username = null;
+		String token = null;
+		if (requestHeader != null && requestHeader.startsWith("Bearer")) {
+			// looking good
+			token = requestHeader.substring(7);
+			try {
 
-            }
+				username = jwtService.extractUsername(token);
+			} catch (IllegalArgumentException e) {
+				logger.info("Illegal Argument while fetching the username !!");
+				e.printStackTrace();
+			} catch (ExpiredJwtException e) {
+				logger.info("Given jwt token is expired !!");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				response.getWriter().write("Token expired");
+				return;
 
+			} catch (MalformedJwtException e) {
+				logger.info("Some changed has done in token !! Invalid Token");
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-        } else {
-            logger.info("Invalid Header Value !! ");
-        }
+		} else {
+			logger.info("Invalid Header Value !! ");
+		}
 
+		//
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-        //
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			// fetch user detail from username
+			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
+			if (jwtService.isTokenValid(token, userDetails)) {
 
-            //fetch user detail from username
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-          
-            if (jwtService.isTokenValid(token, userDetails)) {
+				// set the authentication
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+						userDetails, null, userDetails.getAuthorities());
+				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                //set the authentication
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+			} else {
+				logger.info("Validation fails !!");
+			}
 
+		}
 
-            } else {
-                logger.info("Validation fails !!");
-            }
+		filterChain.doFilter(request, response);
 
+	}
 
-        }
-
-        filterChain.doFilter(request, response);
-
-
-    }
-
-
-	
 }

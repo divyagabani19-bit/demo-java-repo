@@ -29,29 +29,30 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "LoginUser")
 
-public class AuthUser implements UserDetails{
+public class AuthUser implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer userId;
 	private String name;
 	private String password;
-	
+
 	@Enumerated(EnumType.STRING)
 	private Role role;
-	
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(role.name()));
 	}
+
 	@Override
 	public @Nullable String getPassword() {
 
 		return password;
 	}
+
 	@Override
 	public String getUsername() {
 
 		return name;
 	}
 }
-

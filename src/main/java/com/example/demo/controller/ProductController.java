@@ -27,7 +27,6 @@ import tools.jackson.databind.ObjectMapper;
 import com.example.demo.model.Product;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api")
 public class ProductController {
 
@@ -53,12 +52,11 @@ public class ProductController {
 	@GetMapping("/product/{id}/image")
 	public ResponseEntity<?> getImageByProdId(@PathVariable("id") int id) {
 		Product prod = service.getProdById(id);
-		if(prod != null && prod.getImageData() != null) {
-		byte[] imageFile = prod.getImageData();
-		return ResponseEntity.ok().contentType(MediaType.valueOf(prod.getImageType())).body(imageFile);
-		}
-		else {
-			return new ResponseEntity<>("Product not valid ", HttpStatus.NOT_FOUND);			
+		if (prod != null && prod.getImageData() != null) {
+			byte[] imageFile = prod.getImageData();
+			return ResponseEntity.ok().contentType(MediaType.valueOf(prod.getImageType())).body(imageFile);
+		} else {
+			return new ResponseEntity<>("Product not valid ", HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -66,16 +64,16 @@ public class ProductController {
 	public ResponseEntity<?> updateImageToProduct(@PathVariable("id") int id,
 			@RequestParam("image") MultipartFile imageFile) {
 		Product prod = service.getProdById(id);
-		if(prod != null) {
-		try {
-			Product Outprod = service.updateImageToProdById(id, imageFile);
+		if (prod != null) {
+			try {
+				Product Outprod = service.updateImageToProdById(id, imageFile);
 
-			return ResponseEntity.ok().contentType(MediaType.valueOf(Outprod.getImageType())).body(Outprod.getImageData());
-		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		}
-		else {
+				return ResponseEntity.ok().contentType(MediaType.valueOf(Outprod.getImageType()))
+						.body(Outprod.getImageData());
+			} catch (Exception e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} else {
 			return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
 		}
 
@@ -90,7 +88,7 @@ public class ProductController {
 		Product destProd = service.getProdById(id);
 		if (destProd != null) {
 			try {
-				
+
 				Product outProd = service.updateProduct(id, inProd, imageFile);
 				if (outProd != null)
 					return new ResponseEntity<>("updated", HttpStatus.OK);
@@ -144,37 +142,38 @@ public class ProductController {
 		}
 
 	}
-	
-	@GetMapping("/product/search/{keyword}")
-	public ResponseEntity<List<Product>> searchProducts(@PathVariable("keyword") String keyword){
-		System.out.println("Searching with "+keyword	 );
-		List<Product> products = service.searchProducts(keyword);
-		return new ResponseEntity<>(products,HttpStatus.OK);
-	}
-	@GetMapping("/product/name/{name}")
-	public ResponseEntity<List<Product>> searchProductsByName(@PathVariable("name") String name){
-		System.out.println("Searching with "+name	 );
-		List<Product> products = service.searchProductsByName(name);
-		return new ResponseEntity<>(products,HttpStatus.OK);
-	}
-	@GetMapping("/product/expensive/price/{price}/cat/{cat}")
-	public ResponseEntity<List<Product>> searchExpensiveProducts(@PathVariable("price") Double price,@PathVariable("cat") String cat){
-		System.out.println("Searching with "+price +" "+cat	 );
-		List<Product> products = service.searchExpensiveProducts(price, cat);
-		return new ResponseEntity<>(products,HttpStatus.OK);
-	}
-	
-	@GetMapping("/product/price/{price}")
-	public ResponseEntity<List<Product>> searchByPrice(@PathVariable("price") Double price){
-		List<Product> products = service.searchByPrice(price);
-		return new ResponseEntity<>(products,HttpStatus.OK);
-	}
-	@GetMapping("/products/paging")
-	public Page<Product> getAllByName(
-			@RequestParam String name,
-	        @RequestParam int page,
-	        @RequestParam int size) {
 
-	    return service.getProducts(name,page, size);
+	@GetMapping("/product/search/{keyword}")
+	public ResponseEntity<List<Product>> searchProducts(@PathVariable("keyword") String keyword) {
+		System.out.println("Searching with " + keyword);
+		List<Product> products = service.searchProducts(keyword);
+		return new ResponseEntity<>(products, HttpStatus.OK);
+	}
+
+	@GetMapping("/product/name/{name}")
+	public ResponseEntity<List<Product>> searchProductsByName(@PathVariable("name") String name) {
+		System.out.println("Searching with " + name);
+		List<Product> products = service.searchProductsByName(name);
+		return new ResponseEntity<>(products, HttpStatus.OK);
+	}
+
+	@GetMapping("/product/expensive/price/{price}/cat/{cat}")
+	public ResponseEntity<List<Product>> searchExpensiveProducts(@PathVariable("price") Double price,
+			@PathVariable("cat") String cat) {
+		System.out.println("Searching with " + price + " " + cat);
+		List<Product> products = service.searchExpensiveProducts(price, cat);
+		return new ResponseEntity<>(products, HttpStatus.OK);
+	}
+
+	@GetMapping("/product/price/{price}")
+	public ResponseEntity<List<Product>> searchByPrice(@PathVariable("price") Double price) {
+		List<Product> products = service.searchByPrice(price);
+		return new ResponseEntity<>(products, HttpStatus.OK);
+	}
+
+	@GetMapping("/products/paging")
+	public Page<Product> getAllByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
+
+		return service.getProducts(name, page, size);
 	}
 }

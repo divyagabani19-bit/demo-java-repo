@@ -1,6 +1,5 @@
 package com.example.demo.Security.Service;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -43,15 +42,15 @@ public class AuthService {
 
 	public JwtResponse login(JwtRequest request) {
 
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(request.getUsername(),
-				request.getPassword());
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+				request.getUsername(), request.getPassword());
 		try {
 			authenticationManager.authenticate(authentication);
 			var user = repo.findByName(request.getUsername()).orElseThrow();
 			var jwtToken = jwtService.generateToken(user);
 
 			return JwtResponse.builder().username(user.getUsername()).jwtToken(jwtToken).build();
-			
+
 		} catch (BadCredentialsException e) {
 			throw new BadCredentialsException(" Invalid Username or Password  !!");
 		}

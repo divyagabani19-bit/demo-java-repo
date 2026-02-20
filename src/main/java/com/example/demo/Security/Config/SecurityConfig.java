@@ -21,26 +21,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+	@Autowired
+	private JwtAuthenticationEntryPoint point;
+	@Autowired
+	private JwtAuthenticationFilter filter;
+	@Autowired
+	private AuthenticationProvider authenticationProvider;
 
-    @Autowired
-    private JwtAuthenticationEntryPoint point;
-    @Autowired
-    private JwtAuthenticationFilter filter;
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.csrf(csrf -> csrf.disable())
-        	.cors(cors -> cors.disable())
-            .authorizeHttpRequests(auth -> auth.requestMatchers("/api/**").authenticated().requestMatchers("/auth/**").permitAll().anyRequest().authenticated()) 
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
-                .authenticationProvider(authenticationProvider)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
-
+		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/api/**").authenticated()
+						.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
+				.exceptionHandling(ex -> ex.authenticationEntryPoint(point))
+				.authenticationProvider(authenticationProvider)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+		return http.build();
+	}
 
 }

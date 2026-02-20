@@ -1,6 +1,5 @@
 package com.example.demo.Security.Config;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
 import com.example.demo.Security.Repo.AuthRepo;
 
 import lombok.RequiredArgsConstructor;
@@ -22,12 +20,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserConfig {
 
-	@Autowired AuthRepo repo;
-	
+	@Autowired
+	AuthRepo repo;
+
 	@Bean
 	public UserDetailsService userDetailsService() {
-		return username -> repo.findByName(username)
-				.orElseThrow(() -> new UsernameNotFoundException("user not found"));
+		return username -> repo.findByName(username).orElseThrow(() -> new UsernameNotFoundException("user not found"));
 	}
 
 	@Bean
@@ -35,7 +33,7 @@ public class UserConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean	
+	@Bean
 	public AuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
 		authProvider.setPasswordEncoder(passwordEncoder());
@@ -43,7 +41,7 @@ public class UserConfig {
 	}
 
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
-		return config.getAuthenticationManager(); 
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
 	}
 }
