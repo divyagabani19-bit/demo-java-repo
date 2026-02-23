@@ -28,7 +28,9 @@ public class JwtConfig {
 public class JwtConfig {
 
 	private String secret;
-	private long expiration;
 	private String issuer;
+	private long accessExpiration;
+	private long refreshExpiration;
+
 
 }

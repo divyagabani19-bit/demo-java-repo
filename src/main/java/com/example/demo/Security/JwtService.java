@@ -8,14 +8,12 @@ import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import com.example.demo.Security.Config.JwtConfig;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.SneakyThrows;
+
 
 @Component
 public class JwtService {
@@ -23,15 +21,25 @@ public class JwtService {
 	@Autowired
 	private JwtConfig jwtConfig;
 
-	public String generateToken(UserDetails userDetails) {
-		return generateToken(new HashMap<String, Object>(), userDetails);
-	}
+	// Generate Access Token
+    public String generateAccessToken(UserDetails userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("type", "ACCESS");
+        return buildToken(extraClaims, userDetails, jwtConfig.getAccessExpiration());
+    }
 
-	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    // Generate Refresh Token
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("type", "REFRESH");
+        return buildToken(extraClaims, userDetails, jwtConfig.getRefreshExpiration());
+    }
+	
+	public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails,long expiration) {
 
 		return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
 				.setIssuer(jwtConfig.getIssuer()).setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getExpiration()))
+				.setExpiration(new Date(System.currentTimeMillis() + expiration))
 				.signWith(SignatureAlgorithm.HS256, jwtConfig.getSecret()).compact();
 	}
 

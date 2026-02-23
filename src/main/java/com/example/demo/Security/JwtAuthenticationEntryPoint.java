@@ -14,15 +14,15 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-	@Override
-	public void commence(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException authException) throws IOException, ServletException {
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException authException) throws IOException, ServletException {
 
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		PrintWriter writer = response.getWriter();
-		writer.println("Access Denied !! " + authException.getMessage());
-		// writer.println("SessionID " + request.getSession().getId());
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        PrintWriter writer = response.getWriter();
+        writer.println("Access Denied !! " + authException.getMessage());
+        // writer.println("SessionID " + request.getSession().getId());
 
-	}
+    }
 
 }
