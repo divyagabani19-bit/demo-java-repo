@@ -28,7 +28,7 @@ public interface ProductRepo extends JpaRepository<Product, Integer> {
     List<Product> findExpensive(@Param("price") Double price, @Param("cat") String cat);
 
     @Query(value = "SELECT * FROM Product WHERE price > :price", nativeQuery = true)
-    List<Product> findByPrice(Double price);
+    List<Product> findByPrice(@Param("price") Double price);
 
     Page<Product> findByNameContaining(String name, Pageable pageable);
 
